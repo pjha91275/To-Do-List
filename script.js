@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
         const completedTasks = taskList.querySelectorAll('.checkbox:checked').length;
 
         progressBar.style.width = totalTasks ? `${(completedTasks / totalTasks) * 100}%` : '0';
-        progressNumbers.textcontent = `${completedTasks} / ${totalTasks}`;
+        progressNumbers.innerText = `${completedTasks} / ${totalTasks}`;
 
         if(checkCompletion && totalTasks > 0 && completedTasks == totalTasks){
             Confetti();
@@ -27,9 +27,9 @@ document.addEventListener('DOMContentLoaded', ()=>{
     const saveTaskToLocalStorage = () =>{
         const tasks = Array.from(taskList.querySelectorAll('li')).map(li => ({
             text: li.querySelector('span').textContent,
-            completed : li.querySelctor('.checkbox').checked
+            completed : li.querySelector('.checkbox').checked
         }));
-        localStorage.setItem('tasks', JSON.stringyfy(tasks));
+        localStorage.setItem('tasks', JSON.stringify(tasks));
     }
 
     const LoadTasksFromLocalStorage = () =>{
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
         </div>`;
 
         const checkbox = li.querySelector('.checkbox');
-        const editBtn = li.quqerySelector('.edit-btn');
+        const editBtn = li.querySelector('.edit-btn');
 
 
         if(completed){
@@ -77,16 +77,16 @@ document.addEventListener('DOMContentLoaded', ()=>{
         editBtn.addEventListener('click', ()=>{
             if(!checkbox.checked){
                 taskInput.value = li.querySelector('span').textContent;
-                 li.remove;
-                 toogleEmptyState();
+                 li.remove();
+                 toggleEmptyState();
                  updateProgress(false);
                  saveTaskToLocalStorage();
             }
         });
 
         li.querySelector('.delete-btn').addEventListener('click', ()=>{
-            li.remove;
-            toogleEmptyState();
+            li.remove();
+            toggleEmptyState();
             updateProgress();
             saveTaskToLocalStorage();
         });
@@ -96,24 +96,27 @@ document.addEventListener('DOMContentLoaded', ()=>{
         toggleEmptyState();
         updateProgress(checkCompletion);
         saveTaskToLocalStorage();
-    };
+};
 
-    addTaskBtn.addEventListener('click',()=>addTask());
+    addTaskBtn.addEventListener('click',(e)=>{
+      e.preventDefault();
+      addTask()});
     taskInput.addEventListener('keypress', (e)=>{
         if(e.key === 'Enter'){
             e.preventDefault();
             addTask();
         }
     })
-    
+
     LoadTasksFromLocalStorage();
+    
 });
 
 //Confetti code for celebration effect
 const Confetti = () =>{
-    const count = 200,
+    const count = 100,
   defaults = {
-    origin: { y: 0.7 },
+    origin: { y: 1 },
   };
 
 function fire(particleRatio, opts) {
@@ -124,31 +127,23 @@ function fire(particleRatio, opts) {
   );
 }
 
-fire(0.25, {
-  spread: 26,
-  startVelocity: 55,
-});
+let y = 1;
+const interval = setInterval(() => {
+  fire(0.2, {
+    spread: 60,
+    startVelocity: 30,
+    scalar: 0.8,
+    origin: {y} });
 
-fire(0.2, {
-  spread: 60,
+  fire(0.1, {
+    spread: 120,
+    startVelocity: 55,
+    scalar: 1.2,
 });
+   y -= 0.05;
+   if (y <= 0.3) clearInterval(interval);
+}, 8);
+};
 
-fire(0.35, {
-  spread: 100,
-  decay: 0.91,
-  scalar: 0.8,
-});
 
-fire(0.1, {
-  spread: 120,
-  startVelocity: 25,
-  decay: 0.92,
-  scalar: 1.2,
-});
-
-fire(0.1, {
-  spread: 120,
-  startVelocity: 45,
-});
-}
 
